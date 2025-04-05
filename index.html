@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>GaussMorph | CS 184</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+</head>
+<body>
+    <div class="site-header">
+            <div class="row">
+                <div class="name-header">
+                    <p>GaussMorph - CS184</p>
+                </div>
+                <div class="title-bar">
+                    <ul>
+                        <li>
+                            <a href="proposal.html">Proposal</a>
+                        </li>
+                        <li>
+                            <a href="milestone.html">Milestone</a>
+                        </li>
+                        <li>
+                            <a href="final_report.html">Final Report</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+<br />
+<div class="report-body">
+    <h1 align="middle">Final Project Proposal</h1>
+    <h2 align="middle">_, _, _, _,</h2>
+	<h3>Abstract</h3>
+        <div class="padded">
+            <p>
+                GaussMorph uses 3D Gaussian Splatting (3DGS) to support object deformation and texture editing. 
+				Our approach takes advantage of the strengths of Gaussians to recover fine details that are often lost when using mesh rasterization.
+            </p>
+        </div>
+    <h3>Problem Description</h3>
+        <div class="padded">
+            <p>
+                Although object editing methods rely on mesh representations are effective for deformations, they are limited when it comes to expressing complex details such as fuzziness. 
+				In contrast, 3D Gaussian Splatting supports fine detail recovery, delivering superior rendering quality by preserving subtle surface features that are often lost in direct mesh rasterization.
+				Our project focuses on harnessing the advantages of 3DGS to build a model that supports object deformation and texture editing. We propose to use mesh data as a geometric guide for deformation and texture edition. 
+            </p>
+        </div>
+    <h3>Goals and Deliverbles</h3>
+        <div class="padded">
+			<h4>The image we will create</h4>
+				<div class="padded">
+					We will edit the trained Gaussian point cloud to generate images of the same object 
+					with new shapes and new textures—images that do not exist in the original dataset.
+				</div>
+			<h4>Baseline Plan</h4>
+				<div class="padded">
+					<p>1. Deformation Support
+					<p>- Bind Gaussians to the triangular faces of a mesh.
+					<p>- Utilize barycentric coordinates of each triangle face to represent the position of the associated Gaussian. This enables us to more accurately compute each Gaussian’s position and covariance matrix based on the mesh’s deformation and the local transformation defined in the triangle’s coordinate system.
+					
+					<p>2. Texture Editing Support
+					<p>- Use the xatlas library to unwrap the mesh and get vertex UV coordinates.
+					<p>- Calculate the UV coordinates for each Gaussian by weighting the vertex UVs with the Gaussian’s barycentric coordinates.
+					<p>- Develop a texture extraction method where we first learn from each Gaussian’s color to create a texture image by gaussians' UV coordinates. Once the texture image is built, users can edit it. The edited texture is then used to update the colors of the Gaussians according to their UV mappings.
+					
+					<p>3. Integration
+   					<p>- Combine the deformation and retexturing modules into the existing 3DGS framework so that both shape and texture can be edited at the same time.
+				</div>
+			<h4>Aspirational Plan</h4>
+				<div class="padded">
+					<p>- Extend the editing framework to support multiple objects or entire scenes.
+					<p>- Implement an interactive viewer that allows users to explore and manipulate the object in real time.
+			</div>
+			<h4>Performance Metrics</h4>
+				<div class="padded">
+					<p>- Editing Quality: Check if the edited objects show natural deformations and texture changes without any artifacts or blurriness.
+
+					<p>- Rendering Quality: Measure how well the system recovers fine details, especially for complex surfaces.
+
+					<p>- The final deliverable will be a demonstration video showing the evolution of the object under continuous deformation and texture editing.
+			</div>
+        </div>
+    <h3>Schedule</h3>
+        <div class="padded">
+			<h4>Week 1 Setup</h4>
+			<div class="padded">
+				<p>- Study the 3DGS codebase to understand its structure and workflow.
+				<p>- Set up the development environment.
+				<p>- Use xatlas to unwrap a mesh and analyze the resulting UV layout.
+			</div>
+			<h4>Week 2 Deformation Development</h4>
+			<div class="padded">
+				<p>- Implement deformation calculations to update Gaussian positions and covariance matrices based on mesh transformations.
+				<p>- Validate the deformation functionality on mesh models.
+			</div>
+			<h4>Week 3 Retexture Module Development</h4>
+			<div class="padded">
+				<p>- Develop a method to extract textures from Gaussian colors, creating a texture image.
+				<p>- Implement texture editing that updates Gaussian colors based on the modified texture.
+				<p>- Test the retexture process.
+			</div>
+			<h4>Week 4 Integration, Testing, and Pre-demo Preparation</h4>
+			<div class="padded">
+				<p>- Integrate the deformation and retexture modules
+				<p>- Prepare materials for the presentation
+				<p>- Optionally, implement an interactive viewer for real-time preview.
+			</div>
+        </div>
+
+    <h3>Resources</h3>
+    <div class="padded">
+        <p>
+            <h3 align="middle"> Papers/Online Resources: </h3>
+            <br>
+        <p align="middle">
+			<p align="middle">3D Gaussian Splatting for Real-Time Radiance Field Rendering  
+			<p align="middle">- arXiv: [2308.04079 [cs.GR]] <a href="https://doi.org/10.48550/arXiv.2308.04079">(https://doi.org/10.48550/arXiv.2308.04079)</a>
+			
+		  	<p align="middle">Mani-GS: Gaussian Splatting Manipulation with Triangular Mesh
+			<p align="middle">- arXiv: [2405.17811 [cs.GR]] <a href="https://doi.org/10.48550/arXiv.2405.17811">(https://doi.org/10.48550/arXiv.2405.17811)</a>  
+		  
+		 	<p align="middle">Mesh-based Gaussian Splatting for Real-time Large-scale Deformation
+			<p align="middle">- arXiv: [2402.04796 [cs.GR]] <a href="https://doi.org/10.48550/arXiv.2402.04796">(https://doi.org/10.48550/arXiv.2402.04796)</a>  
+		  
+        </p>
+            <br>
+        <h3 align="middle"> Libraries and Code:</h3>
+            <br>
+        <p align="middle">
+            3D Gaussian Splatting Code:<a href="https://github.com/graphdeco-inria/gaussian-splatting">[https://github.com/graphdeco-inria/gaussian-splatting]</a>
+            <p align="middle">xatlas Library:<a href="https://github.com/jpcy/xatlas">[https://github.com/jpcy/xatlas]</a>
+        </p>
+            <br>
+        <h3 align="middle"> Development Environment: </h3>
+            <br>
+        <p align="middle">
+			<p align="middle">Programming Language: Python  
+				<p align="middle">Framework: PyTorch  
+					<p align="middle">Development Platform: VSCode  
+						<p align="middle">Environment Management: Anaconda  
+							<p align="middle">Hardware: GPU-supported computing platform
+        </p>
+
+
+        </p>
+    </div>
+</div>
+
+
+</body>
+
+</html>
