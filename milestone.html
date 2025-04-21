@@ -14,13 +14,13 @@
                 <div class="title-bar">
                     <ul>
                         <li>
-                            <a href="proposal.html">Proposal</a>
+                            <a href="https://cs184-final-proj-gaussmorph.github.io/webpage/proposal.html">Proposal</a>
                         </li>
                         <li>
-                            <a href="milestone.html">Milestone</a>
+                            <a href="https://cs184-final-proj-gaussmorph.github.io/webpage/milestone.html">Milestone</a>
                         </li>
                         <li>
-                            <a href="final_report.html">Final Report</a>
+                            <a href="https://cs184-final-proj-gaussmorph.github.io/webpage/final_report.html">Final Report</a>
                         </li>
                     </ul>
                 </div>
@@ -30,9 +30,69 @@
 <div class="report-body">
     <h1 align="middle"> Milestone</h1>
     <h2 align="middle">Zishan Wang, Zeyu Deng, Jack Wang, Owen Zou</h2>
-	<p>To be continue ...
-
-
+	<h3>Accomplishment</h3>
+        <div class="padded">
+            <p> - Mesh‑Guided Gaussian Framework: Implemented explicit 3D Gaussians bound to mesh faces</p>
+            <p> - Deformation: support geometric deformation.</p>
+            <p> - UV Mapping: Integrated xatlas to generate a global UV atlas.</p>
+        </div>
+    <h3>Preliminary Results</h3>
+        <div class="padded">
+            <p> We trained two scenes as shown below</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="experiment.png" width="600px"/>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="log.png" width="600px"/>
+				</td>
+			  </tr>
+			</table>
+		    </div>
+            <p> Below is an animation generated from the lego model, showing the deformation we implemented. 
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                      <tr>
+                        <td style="text-align: center;">
+                          <img src="lego_animation.gif" width="600px"/>
+                        </td>
+                      </tr>
+                    </table>
+            </div>
+        </div>
+        <h3>Progress and plan</h3>
+        <div class="padded">
+            <p> All milestones for Weeks 1–2 have been met on schedule:</p>
+            <p> - Week 1: Set up the development environment and use xatlas to unwrap a mesh.</p>
+            <p> - Week 2: Geometry module development and deformation.</p>
+            <p>Over the next two weeks, we will continue exactly as planned:</p>
+            <p>- Week 3 Retexture Module Development
+            </p>
+            <p>  - Develop a method to extract textures from Gaussian colors, creating a texture image.
+            </p>
+            <p>  - Implement texture editing that updates Gaussian colors based on the modified texture.
+            </p>
+            <p>  - Test the retexture process.
+            </p>
+            <p>- Week 4 Integration, Testing, and Pre-demo Preparation
+            </p>
+            <p>  - Integrate the deformation and retexture modules
+            </p>
+            <p>  - Prepare materials for the presentation
+            </p>
+            <p>  - Optionally, implement an interactive viewer for real-time preview.
+            </p>
+        </div>
+        <h3>Slides</h3>
+        <p><a href="https://docs.google.com/presentation/d/1n1xa20L90iQyzGW1rG1BQKNXYaT3UclA/edit?usp=sharing&ouid=110304612330432825550&rtpof=true&sd=true
+            ">(Link to Google Slide)</a>
+        <h3>Video</h3>
+        <p><a href="https://drive.google.com/file/d/1_-JIvZV1RgxAaXVjBzxXosqJXcjqf_qr/view?usp=sharing
+            ">(Link to Video)</a>
 </body>
 
 </html>
