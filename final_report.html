@@ -3,6 +3,8 @@
 <head>
 <title>GaussMorph | CS 184</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
 </head>
 <body>
@@ -14,13 +16,13 @@
                 <div class="title-bar">
                     <ul>
                         <li>
-                            <a href="proposal.html">Proposal</a>
+                            <a href="https://cs184-final-proj-gaussmorph.github.io/webpage/proposal.html">Proposal</a>
                         </li>
                         <li>
-                            <a href="milestone.html">Milestone</a>
+                            <a href="https://cs184-final-proj-gaussmorph.github.io/webpage/milestone.html">Milestone</a>
                         </li>
                         <li>
-                            <a href="final_report.html">Final Report</a>
+                            <a href="https://cs184-final-proj-gaussmorph.github.io/webpage/final_report.html">Final Report</a>
                         </li>
                     </ul>
                 </div>
@@ -30,9 +32,264 @@
 <div class="report-body">
     <h1 align="middle"> Final Report</h1>
     <h2 align="middle">Zishan Wang, Zeyu Deng, Jack Wang, Owen Zou</h2>
-	<p>To be continue ...
-
-
+    <h2 align="middle">Team 30</h2>
+	<h2>Abstract</h2>
+        <div class="padded">
+            <p>
+                In computer vision, creating 3D scenes that are both editable and capable of efficient rendering remains a formidable challenge. 
+                Explicit 3D Gaussian Splatting representations significantly boost rendering performance and open up new possibilities for scene editing, yet existing methods typically handle either geometric deformation or texture modification—not both within a single framework. 
+                Moreover, mesh‑based approaches to joint geometry and texture editing lack the expressive power needed to model high‑frequency details such as hair with precision.To overcome these limitations, we propose a mesh‑guided explicit Gaussian representation framework that preserves Gaussian rendering efficiency and editing flexibility while decoupling—and then collaboratively editing—geometry and texture. We place Gaussians directly on the mesh surface for fine‑grained geometric modeling, and we leverage xatlas to unfold the mesh into a global UV atlas for flexible texture editing. 
+                By separating geometric and appearance attributes in the Gaussian representation, our method supports both independent edits of geometry or texture and their synchronized adjustment within the same unified system.
+            </p>
+        </div>
+    <h2>Technical approach</h2>
+        <div class="padded">
+            <p>
+                Using multi‑view images, we generate Gaussians guided by an explicit mesh and unfold that mesh into a UV atlas with xatlas for joint texture optimization.
+                Having implemented mesh‑driven deformation, we will next add texture editing and integrate both modes.
+            </p>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <table style="width: 100%; text-align: center; border-collapse: collapse;">
+              <tr>
+                <td style="text-align: center;">
+                  <img src="pipline.png" width="800px"/>
+                </td>
+              </tr>
+            </table>
+        </div>
+        <div class="padded">
+            <p>
+            we split training into two stages:
+            </p>
+            <h3>1. Geometry‐only stage  </h3>
+			<div class="padded">
+				<p> Fit the geometry using the traditional Gaussian rendering pipeline.
+			</div>
+            <h3>2. Texture‐rendering stage  </h3>
+			<div class="padded">
+				<p> Render textures using the TextureGS approach.
+			</div>
+            <div class="padded">
+            <h3></h3>
+            <p> Our experiments show that attempting to train geometry and texture simultaneously leads to some Gaussians misaligning with the surface and producing blurred renders. 
+                The two‐stage strategy decouples geometry fitting from texture learning, resulting in a more precise geometric reconstruction.
+            </div>
+        </div>
+        <h3>Geometry construction</h3>
+        <div class="padded">
+            <p>
+            First, given a set of multi-view images, we introduce an explicit mesh as a topological guide and adopt a mesh-based Gaussian distribution learning strategy. 
+            During training, we constrain each Gaussian’s parameters and growth to ensure that it remains tightly bound to its associated triangle—its position being jointly determined by the three vertex coordinates of that triangle and its centroid—thus performing precise geometric modeling.
+            </p>
+            <h2></h2>
+            <div class="padded">
+                <p> We trained two scenes as shown below</p>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                  <tr>
+                    <td style="text-align: center;">
+                      <img src="equation1.png" width="600px"/>
+                    </td>
+                  </tr>
+                </table>
+            </div>
+            <div class="padded">
+            <p>
+            Like the definition in Mani-GS[1], for each triangle, we define its local coordinate frame \(R^t\). 
+            We choose one edge of the triangle and take the unit vector along that edge (with orientation) as the first axis; 
+            we take the triangle's unit normal \(n^t\) as the second axis; and we define the third axis as the cross-product of the first two axes. 
+            We then relate local Gaussian parameters \((R^l, s^l, \mu^l)\) to the global frame by
+            </p>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                  <tr>
+                    <td style="text-align: center;">
+                      <img src="equation2.png" width="500px"/>
+                    </td>
+                  </tr>
+                </table>
+            </div>
+            <p>
+            where \(\mu^t\) is the triangle's centroid. In other words, the global rotation \(R\) is obtained by premultiplying the Gaussian's local rotation \(R^l\) by the triangle's local frame \(R^t\); the global scale \(s\) equals the local scale \(s^l\); and the global \(\mu\) is the rotated local mean plus the triangle center.
+            </p>
+            
+        </div>
+        <h3>Texture Extraction</h3>
+        <div class="padded">
+            <p>
+            Using `xatlas` to unwrap the mesh onto a square texture atlas, we obtain vertex UV mappings. Based on barycentric coordinates, we compute each Gaussian’s UV coordinates.
+            </p>
+            <h2></h2>
+            <div class="padded">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                  <tr>
+                    <td style="text-align: center;">
+                      <img src="equation3.png" width="500px"/>
+                    </td>
+                  </tr>
+                </table>
+            </div>
+            <div class="padded">
+            <p>
+            By modeling the gradient of UV with respect to the Gaussian’s global coordinate \(\mu\), we fill in texture information for regions not covered by UV.
+            </p>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                  <tr>
+                    <td style="text-align: center;">
+                      <img src="equation4.png" width="150px"/>
+                    </td>
+                  </tr>
+                </table>
+            </div>
+            <p>
+            Then, we perform joint optimization between the Gaussian parameters and the texture atlas to complete texture extraction.
+            </p>
+            <h2></h2>
+            <p>We adapt the texture‐rendering scheme from TextureGS[2] to model texture information in regions without UV mapping, 
+                but replace TextureGS’s cube‐layout atlas with a square texture map. Unlike TextureGS, 
+                which can only model textures for objects with spherical topology, fails to fit reasonable textures on fine geometric details, 
+                and even distorts geometry when edited and re‐rendered as Gaussians, our method supports arbitrary topologies, captures fine geometric detail, 
+                and preserves the original geometry when mapping back to Gaussians.
+            </p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                  <tr>
+                    <td style="text-align: center;">
+                      <img src="uv_consistency.png" width="700px"/>
+                    </td>
+                  </tr>
+                </table>
+            </div>
+            <p> During the extraction period, a ray may intersect with different Gaussians and generate intersections corresponding to different UV coordinates, propagating the same pixel gradient to multiple locations on the texture image, thereby generating blurred texture images. 
+                To address this problem, we propose to constrain the centers of Gaussians to lie on the mesh surface, with their rotations aligned to the surface normals.
+            </p>
+        </div>
+        <h3>Edition</h3>
+        <div class="padded">
+            <p>
+                In the interactive stage, the framework leverages the binding between Gaussians and the mesh to propagate user‐driven mesh deformations and texture edits into the Gaussian parameters, 
+                enabling real‐time scene editing and rendering. The parameters affected by mesh deformation include \(R\), \(\mu\), and \(\nabla uv\).
+            </p>
+        </div>
+        <h3>Loss Design</h3>
+        <div class="padded">
+            <p>
+                We introduce a rotation loss \(L_r\) to encourage each Gaussian to adhere closely to the surface, thereby preserving UV continuity.
+                Also we use scale loss \(L_s\) to constrain Gaussian size, ensuring that when deformations occur and Gaussians move with the mesh, they cannot grow so large as to cause blurring.
+            </p>
+        </div>
+        <h2>Result</h2>
+        <div class="padded">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <h3>Reconstruction and Texture Extraction</h3>
+            <table style="width: 100%; text-align: center; border-collapse: collapse;">
+              <tr>
+                <td style="text-align: center;">
+                  <img src="rendering.png" width="700px"/>
+                </td>
+              </tr>
+              <tr>
+                <td style="text-align: center;">
+                  <img src="quality.png" width="700px"/>
+                </td>
+              </tr>
+            </table>
+            <h3>Edition</h3>
+              <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                <tr>
+                  <td style="text-align: center;">
+                    <img src="khady.png" width="700px"/>
+                    <figcaption>Texture Edition only</figcaption>
+                  </td>
+                  </tr>
+                  <tr>
+                  <td style="text-align: center;">
+                    <img src="fernvase.png" width="700px"/>
+                    <figcaption>Deformation only</figcaption>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="text-align: center;">
+                    <img src="lego.png" width="700px"/>
+                    <figcaption>Combined Deformation and Retexturing</figcaption>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="text-align: center;">
+                    <img src="lego_animation3.gif" width="680px"/>
+                    <figcaption>Animation</figcaption>
+                  </td>
+                </tr>
+              </table>
+              <h3>Video</h3>
+              <p><a href="https://drive.google.com/file/d/1CtjeXdXQCfiClgQeueDWDGhiOa90hW3w/view?usp=sharing
+              ">(Link to Video)</a>
+          </div>
+        </div>
+        <h2>Contributions from each team member</h2>
+        <h3>Code</h3>
+        <div class="padded">
+            <p>
+              The coding workload is roughly evenly distributed:
+            </p>
+            <h3></h3>
+            <p>Zeyu Deng: Geometry Modeling (Mesh-to-Gaussian)</p>
+            <p>Jack Wang: UV & Gradient Computation and Loss Design</p>
+            <p>Zishan Wang: Square UV Texture Rendering and Extraction</p>
+            <p>Owen Zou: Interactive Editing and Real-Time Rendering</p>
+        </div>
+        <h3>Documents and videos</h3>
+        <div class="padded">
+          <p>
+            Zishan Wang consolidated the project proposal document.
+          </p>
+          <h3></h3>
+          <p>For both milestone and final phases, each contributor completed the PPT and documentation for their respective module.
+          </p>
+          <h3></h3>
+          <p>Milestone deliverables were integrated by Zeyu Deng and Jack Wang; final deliverables were integrated by Zishan Wang and Owen Zou.
+          </p>
+      </div>
+    <h2>Resources and Reference</h2>
+    <div class="padded">
+        <p>
+            <h3 align="middle"> Papers/Online Resources: </h3>
+            <br>
+        <p align="middle">
+			<p align="middle">3D Gaussian Splatting for Real-Time Radiance Field Rendering  
+			<p align="middle">- arXiv: [2308.04079 [cs.GR]] <a href="https://doi.org/10.48550/arXiv.2308.04079">(https://doi.org/10.48550/arXiv.2308.04079)</a>
+			
+		  	<p align="middle">Mani-GS: Gaussian Splatting Manipulation with Triangular Mesh
+			<p align="middle">- arXiv: [2405.17811 [cs.GR]] <a href="https://doi.org/10.48550/arXiv.2405.17811">(https://doi.org/10.48550/arXiv.2405.17811)</a>  
+		  
+		 	<p align="middle">Mesh-based Gaussian Splatting for Real-time Large-scale Deformation
+			<p align="middle">- arXiv: [2402.04796 [cs.GR]] <a href="https://doi.org/10.48550/arXiv.2402.04796">(https://doi.org/10.48550/arXiv.2402.04796)</a>  
+		  
+        </p>
+            <br>
+        <h3 align="middle"> Libraries and Code:</h3>
+            <br>
+        <p align="middle">
+            3D Gaussian Splatting Code:<a href="https://github.com/graphdeco-inria/gaussian-splatting">[https://github.com/graphdeco-inria/gaussian-splatting]</a>
+            <p align="middle">xatlas Library:<a href="https://github.com/jpcy/xatlas">[https://github.com/jpcy/xatlas]</a>
+        </p>
+            <br>
+        <h3 align="middle"> Development Environment: </h3>
+            <br>
+        <p align="middle">
+			<p align="middle">Programming Language: Python  
+				<p align="middle">Framework: PyTorch  
+					<p align="middle">Development Platform: VSCode  
+						<p align="middle">Environment Management: Anaconda  
+							<p align="middle">Hardware: GPU-supported computing platform
+        </p>
+        </p>
+    </div>
 </body>
 
 </html>
